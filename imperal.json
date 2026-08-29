@@ -1,0 +1,980 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.13.0",
+  "app_id": "typeform-connector",
+  "version": "0.1.0",
+  "name": "Typeform",
+  "description": "Connect your own Typeform account (Personal Access Token) to manage forms, responses, webhooks, and workspaces.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "typeform:read",
+    "typeform:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_typeform",
+      "description": "Connect your own Typeform account by saving its Personal Access Token, after checking it actually works.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "A friendly name for this account, e.g. 'Marketing team'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "access_token": {
+            "description": "Your Typeform Personal Access Token (Account settings > Personal tokens).",
+            "title": "Access Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token"
+        ],
+        "title": "ConnectTypeformParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "form_count": {
+            "default": 0,
+            "title": "Form Count",
+            "type": "integer"
+          }
+        },
+        "title": "ConnectTypeformResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "disconnect_typeform",
+      "description": "Disconnect a Typeform account: deletes the saved Personal Access Token. Nothing in Typeform itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "The connection id to disconnect, from list_connections.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectTypeformParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Typeform accounts.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "ListConnectionsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "TypeformConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "label": {
+                "default": "",
+                "title": "Label",
+                "type": "string"
+              }
+            },
+            "title": "TypeformConnection",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/TypeformConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "title": "ConnectionList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "list_forms",
+      "description": "List forms in the connected Typeform account, optionally filtered to one workspace.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "workspace_id": {
+            "default": "",
+            "description": "Optionally filter forms to one workspace id.",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "title": "ListFormsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Form": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "last_updated_at": {
+                "default": "",
+                "title": "Last Updated At",
+                "type": "string"
+              },
+              "settings_language": {
+                "default": "",
+                "title": "Settings Language",
+                "type": "string"
+              }
+            },
+            "title": "Form",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "forms": {
+            "items": {
+              "$ref": "#/$defs/Form"
+            },
+            "title": "Forms",
+            "type": "array"
+          }
+        },
+        "title": "FormList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "get_form",
+      "description": "Read one Typeform form's structure in full, including field count and language.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id, from list_forms.",
+            "title": "Form Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "form_id"
+        ],
+        "title": "GetFormParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "language": {
+            "default": "",
+            "title": "Language",
+            "type": "string"
+          },
+          "field_count": {
+            "default": 0,
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "last_updated_at": {
+            "default": "",
+            "title": "Last Updated At",
+            "type": "string"
+          }
+        },
+        "title": "FormDetail",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "delete_form",
+      "description": "Move a Typeform form to trash. Recoverable from the Typeform UI for a limited time.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:form"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id to permanently delete (moves to trash).",
+            "title": "Form Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "form_id"
+        ],
+        "title": "DeleteFormParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "update_form_title",
+      "description": "Rename an existing Typeform form.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:form"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id to rename.",
+            "title": "Form Id",
+            "type": "string"
+          },
+          "title": {
+            "description": "The new title for the form.",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "form_id",
+          "title"
+        ],
+        "title": "UpdateFormTitleParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "language": {
+            "default": "",
+            "title": "Language",
+            "type": "string"
+          },
+          "field_count": {
+            "default": 0,
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "last_updated_at": {
+            "default": "",
+            "title": "Last Updated At",
+            "type": "string"
+          }
+        },
+        "title": "FormDetail",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "list_responses",
+      "description": "List responses collected for a Typeform form, with optional date-range and completion filters.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id whose responses to list.",
+            "title": "Form Id",
+            "type": "string"
+          },
+          "page_size": {
+            "default": 25,
+            "description": "How many responses to return, max 1000.",
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "since": {
+            "default": "",
+            "description": "Only responses submitted after this ISO 8601 date/time.",
+            "title": "Since",
+            "type": "string"
+          },
+          "until": {
+            "default": "",
+            "description": "Only responses submitted before this ISO 8601 date/time.",
+            "title": "Until",
+            "type": "string"
+          },
+          "completed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Filter to only completed (true) or only partial (false) responses.",
+            "title": "Completed"
+          }
+        },
+        "required": [
+          "form_id"
+        ],
+        "title": "ListResponsesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Response": {
+            "properties": {
+              "response_id": {
+                "default": "",
+                "title": "Response Id",
+                "type": "string"
+              },
+              "submitted_at": {
+                "default": "",
+                "title": "Submitted At",
+                "type": "string"
+              },
+              "landed_at": {
+                "default": "",
+                "title": "Landed At",
+                "type": "string"
+              },
+              "is_completed": {
+                "default": false,
+                "title": "Is Completed",
+                "type": "boolean"
+              }
+            },
+            "title": "Response",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "total_items": {
+            "default": 0,
+            "title": "Total Items",
+            "type": "integer"
+          },
+          "responses": {
+            "items": {
+              "$ref": "#/$defs/Response"
+            },
+            "title": "Responses",
+            "type": "array"
+          }
+        },
+        "title": "ResponseList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "delete_responses",
+      "description": "Permanently delete one or more responses from a Typeform form. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:response"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id whose responses to delete.",
+            "title": "Form Id",
+            "type": "string"
+          },
+          "response_ids": {
+            "description": "One or more response ids to permanently delete.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Response Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "form_id",
+          "response_ids"
+        ],
+        "title": "DeleteResponsesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "list_workspaces",
+      "description": "List workspaces (folders that organize forms) in the connected Typeform account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListWorkspacesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Workspace": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "form_count": {
+                "default": 0,
+                "title": "Form Count",
+                "type": "integer"
+              }
+            },
+            "title": "Workspace",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "workspaces": {
+            "items": {
+              "$ref": "#/$defs/Workspace"
+            },
+            "title": "Workspaces",
+            "type": "array"
+          }
+        },
+        "title": "WorkspaceList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "create_workspace",
+      "description": "Create a new workspace (folder) to organize Typeform forms.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:workspace"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "The new workspace's name.",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CreateWorkspaceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "WorkspaceCreateResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "list_webhooks",
+      "description": "List webhooks configured on one Typeform form.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id whose webhooks to list.",
+            "title": "Form Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "form_id"
+        ],
+        "title": "ListWebhooksParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Webhook": {
+            "properties": {
+              "tag": {
+                "default": "",
+                "title": "Tag",
+                "type": "string"
+              },
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "enabled": {
+                "default": false,
+                "title": "Enabled",
+                "type": "boolean"
+              }
+            },
+            "title": "Webhook",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "webhooks": {
+            "items": {
+              "$ref": "#/$defs/Webhook"
+            },
+            "title": "Webhooks",
+            "type": "array"
+          }
+        },
+        "title": "WebhookList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "create_webhook",
+      "description": "Create (or overwrite) a webhook on a Typeform form: Typeform will POST each new response to your URL.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:webhook"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id to attach the webhook to.",
+            "title": "Form Id",
+            "type": "string"
+          },
+          "tag": {
+            "description": "A unique name for this webhook, e.g. 'zapier-sync'.",
+            "title": "Tag",
+            "type": "string"
+          },
+          "url": {
+            "description": "The HTTPS URL Typeform will POST each new response to.",
+            "title": "Url",
+            "type": "string"
+          },
+          "enabled": {
+            "default": true,
+            "description": "Whether the webhook is active immediately.",
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "form_id",
+          "tag",
+          "url"
+        ],
+        "title": "CreateWebhookParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "tag": {
+            "default": "",
+            "title": "Tag",
+            "type": "string"
+          },
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "title": "WebhookCreateResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "delete_webhook",
+      "description": "Permanently remove a webhook from a Typeform form. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:webhook"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "form_id": {
+            "description": "The form id the webhook is attached to.",
+            "title": "Form Id",
+            "type": "string"
+          },
+          "tag": {
+            "description": "The webhook's tag, from list_webhooks.",
+            "title": "Tag",
+            "type": "string"
+          }
+        },
+        "required": [
+          "form_id",
+          "tag"
+        ],
+        "title": "DeleteWebhookParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    },
+    {
+      "name": "audit_typeform_account",
+      "description": "Build one aggregated form activity report for the connected Typeform account: total forms and forms that appear stale (not updated recently).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Typeform account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditTypeformAccountParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "total_forms": {
+            "default": 0,
+            "title": "Total Forms",
+            "type": "integer"
+          },
+          "total_workspaces": {
+            "default": 0,
+            "title": "Total Workspaces",
+            "type": "integer"
+          },
+          "forms_with_no_responses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Forms With No Responses",
+            "type": "array"
+          }
+        },
+        "title": "TypeformAccountReport",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_typeform-connector_chat"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 677,
+  "panels": [
+    {
+      "panel_id": "typeform_sidebar",
+      "slot": "left",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "typeform_settings",
+      "slot": "center",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    }
+  ]
+}
