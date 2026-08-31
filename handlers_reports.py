@@ -35,4 +35,4 @@ async def audit_typeform_account(ctx, params: AuditTypeformAccountParams) -> Act
     return ActionResult.success(TypeformAccountReport(
         total_forms=len(items),
         stalest_forms=stalest,
-    )), summary="Typeform account audit ready."
+    ), summary="Typeform account audit ready.")

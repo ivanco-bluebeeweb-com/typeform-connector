@@ -54,7 +54,7 @@ async def list_forms(ctx, params: ListFormsParams) -> ActionResult:
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     items = resp.get("items", []) if isinstance(resp, dict) else []
-    return ActionResult.success(FormList(forms=[_form_entity(f) for f in items])), summary="Forms listed."
+    return ActionResult.success(FormList(forms=[_form_entity(f) for f in items]), summary="Forms listed.")
 
 
 @chat.function(
@@ -75,7 +75,7 @@ async def get_form(ctx, params: GetFormParams) -> ActionResult:
         language=(f.get("settings") or {}).get("language", ""),
         field_count=len(f.get("fields", []) or []),
         last_updated_at=f.get("last_updated_at", ""),
-    )), summary="Form retrieved."
+    ), summary="Form retrieved.")
 
 
 @chat.function(
@@ -91,7 +91,7 @@ async def delete_form(ctx, params: DeleteFormParams) -> ActionResult:
         await tf.request(ctx, conn, "DELETE", f"/forms/{params.form_id}", action="delete form")
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.success(DeleteResult(deleted=True, id=params.form_id)), summary="Form deleted."
+    return ActionResult.success(DeleteResult(deleted=True, id=params.form_id), summary="Form deleted.")
 
 
 @chat.function(
@@ -113,7 +113,7 @@ async def update_form_title(ctx, params: UpdateFormTitleParams) -> ActionResult:
         language=(f.get("settings") or {}).get("language", ""),
         field_count=len(f.get("fields", []) or []),
         last_updated_at=f.get("last_updated_at", ""),
-    )), summary="Form title updated."
+    ), summary="Form title updated.")
 
 
 @chat.function(
@@ -144,7 +144,7 @@ async def list_responses(ctx, params: ListResponsesParams) -> ActionResult:
             is_completed=bool(r.get("submitted_at")),
         ) for r in items
     ]
-    return ActionResult.success(ResponseList(total_items=resp.get("total_items", 0) if isinstance(resp, dict) else 0, responses=responses)), summary="Responses listed."
+    return ActionResult.success(ResponseList(total_items=resp.get("total_items", 0) if isinstance(resp, dict) else 0, responses=responses), summary="Responses listed.")
 
 
 @chat.function(
@@ -161,7 +161,7 @@ async def delete_responses(ctx, params: DeleteResponsesParams) -> ActionResult:
         await tf.request(ctx, conn, "DELETE", f"/forms/{params.form_id}/responses", params=query, action="delete responses")
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.success(DeleteResult(deleted=True, id=",".join(params.response_ids))), summary="Responses deleted."
+    return ActionResult.success(DeleteResult(deleted=True, id=",".join(params.response_ids)), summary="Responses deleted.")
 
 
 @chat.function(
@@ -182,7 +182,7 @@ async def list_workspaces(ctx, params: ListWorkspacesParams) -> ActionResult:
         Workspace(id=w.get("id", ""), name=w.get("name", ""), form_count=(w.get("forms") or {}).get("count", 0))
         for w in items
     ]
-    return ActionResult.success(WorkspaceList(workspaces=workspaces)), summary="Workspaces listed."
+    return ActionResult.success(WorkspaceList(workspaces=workspaces), summary="Workspaces listed.")
 
 
 @chat.function(
@@ -198,7 +198,7 @@ async def create_workspace(ctx, params: CreateWorkspaceParams) -> ActionResult:
         w = await tf.request(ctx, conn, "POST", "/workspaces", json_body={"name": params.name}, action="create workspace")
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.success(WorkspaceCreateResult(id=w.get("id", ""), name=w.get("name", params.name))), summary="Workspace created."
+    return ActionResult.success(WorkspaceCreateResult(id=w.get("id", ""), name=w.get("name", params.name)), summary="Workspace created.")
 
 
 @chat.function(
@@ -216,7 +216,7 @@ async def list_webhooks(ctx, params: ListWebhooksParams) -> ActionResult:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     items = resp.get("webhooks", []) if isinstance(resp, dict) else []
     webhooks = [Webhook(tag=w.get("tag", ""), url=w.get("url", ""), enabled=w.get("enabled", False)) for w in items]
-    return ActionResult.success(WebhookList(webhooks=webhooks)), summary="Webhooks listed."
+    return ActionResult.success(WebhookList(webhooks=webhooks), summary="Webhooks listed.")
 
 
 @chat.function(
@@ -233,7 +233,7 @@ async def create_webhook(ctx, params: CreateWebhookParams) -> ActionResult:
         w = await tf.request(ctx, conn, "PUT", f"/forms/{params.form_id}/webhooks/{params.tag}", json_body=body, action="create webhook")
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.success(WebhookCreateResult(tag=w.get("tag", params.tag), url=w.get("url", params.url), enabled=w.get("enabled", params.enabled))), summary="Webhook created."
+    return ActionResult.success(WebhookCreateResult(tag=w.get("tag", params.tag), url=w.get("url", params.url), enabled=w.get("enabled", params.enabled)), summary="Webhook created.")
 
 
 @chat.function(
@@ -249,4 +249,4 @@ async def delete_webhook(ctx, params: DeleteWebhookParams) -> ActionResult:
         await tf.request(ctx, conn, "DELETE", f"/forms/{params.form_id}/webhooks/{params.tag}", action="delete webhook")
     except tf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.success(DeleteResult(deleted=True, id=params.tag)), summary="Webhook deleted."
+    return ActionResult.success(DeleteResult(deleted=True, id=params.tag), summary="Webhook deleted.")
