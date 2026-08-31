@@ -32,7 +32,7 @@ async def audit_typeform_account(ctx, params: AuditTypeformAccountParams) -> Act
     items = resp.get("items", []) if isinstance(resp, dict) else []
     sorted_items = sorted(items, key=lambda f: f.get("last_updated_at", ""))
     stalest = [f.get("title", "") for f in sorted_items[:10]]
-    return ActionResult.ok(TypeformAccountReport(
+    return ActionResult.success(TypeformAccountReport(
         total_forms=len(items),
         stalest_forms=stalest,
-    ))
+    )), summary="Typeform account audit ready."

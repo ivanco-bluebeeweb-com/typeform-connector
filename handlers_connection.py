@@ -70,9 +70,9 @@ async def connect_typeform(ctx, params: ConnectTypeformParams) -> ActionResult:
     connections = await _load_connections(ctx)
     connections.append(conn)
     await _save_connections(ctx, connections)
-    return ActionResult.ok(ConnectTypeformResult(
+    return ActionResult.success(ConnectTypeformResult(
         connection_id=conn["id"], label=params.label, form_count=form_count,
-    ))
+    )), summary="Typeform connected."
 
 
 @chat.function(
@@ -86,7 +86,7 @@ async def disconnect_typeform(ctx, params: DisconnectTypeformParams) -> ActionRe
     if len(remaining) == len(connections):
         return ActionResult.error("Connection not found.", code=tf.TF_NOT_CONNECTED)
     await _save_connections(ctx, remaining)
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.connection_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.connection_id)), summary="Typeform disconnected."
 
 
 @chat.function(
@@ -96,6 +96,6 @@ async def disconnect_typeform(ctx, params: DisconnectTypeformParams) -> ActionRe
 )
 async def list_connections(ctx, params: ListConnectionsParams) -> ActionResult:
     connections = await _load_connections(ctx)
-    return ActionResult.ok(ConnectionList(connections=[
+    return ActionResult.success(ConnectionList(connections=[
         TypeformConnection(id=c.get("id", ""), label=c.get("label", "")) for c in connections
-    ]))
+    ])), summary="Connections listed."
