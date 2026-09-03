@@ -27,8 +27,7 @@ import handlers_connection as h
 
 def _settings_button() -> ui.UINode:
     return ui.Button(
-        "App settings", variant="secondary", size="sm", full_width=True,
-        icon="settings", on_click=ui.Call("__panel__typeform_settings"),
+        "App settings", variant="secondary", size="sm", icon="settings", on_click=ui.Call("__panel__typeform_settings"),
     )
 
 
@@ -65,10 +64,14 @@ def _help_modal() -> ui.UINode:
 
 
 def _connect_form() -> ui.UINode:
-    return ui.Form(
-        submit_label="Connect Typeform",
-        action=ui.Call("connect_typeform"),
-        children=[
+    return ui.Stack(direction="v", gap=2, children=[
+        ui.Button("Authorize Typeform (OAuth 2.0)", variant="primary", size="sm", icon="login"),
+        ui.Divider(),
+        ui.Text("Or connect via Personal Access Token", variant="caption"),
+        ui.Form(
+            submit_label="Connect Typeform (PAT)",
+            action=ui.Call("connect_typeform"),
+            children=[
             ui.Stack(direction="v", gap=3, children=[
                 ui.Stack(direction="v", gap=1, children=[
                     ui.Text("Account label", variant="label"),
@@ -81,6 +84,7 @@ def _connect_form() -> ui.UINode:
             ]),
         ],
     )
+    ])
 
 
 @ext.panel("typeform_sidebar", slot="left")
