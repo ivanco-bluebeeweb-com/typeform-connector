@@ -986,5 +986,33 @@
       "max_bytes": 16384,
       "scope": "user"
     }
-  ]
+  ],
+  "pricing": {
+    "model": "per_action",
+    "currency": "credits",
+    "monthly_price": 0,
+    "free_tools": [
+      "connect_typeform",
+      "disconnect_typeform",
+      "list_connections"
+    ],
+    "tool_prices": {
+      "connect_typeform": 0,
+      "disconnect_typeform": 0,
+      "list_connections": 0,
+      "list_forms": 8,
+      "get_form": 8,
+      "delete_form": 16,
+      "update_form_title": 16,
+      "list_responses": 8,
+      "delete_responses": 16,
+      "list_workspaces": 8,
+      "create_workspace": 16,
+      "list_webhooks": 8,
+      "create_webhook": 16,
+      "delete_webhook": 16,
+      "audit_typeform_account": 20
+    },
+    "notes": "Standard platform scale {0, 8, 16, 20, 40}. 0 = access setup and harmless discovery. 8 = read/list/search. 16 = standard single mutation/CRUD. 20 = bulk or heavy audit operation."
+  }
 }
